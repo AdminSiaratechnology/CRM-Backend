@@ -1,0 +1,27 @@
+from fastapi import APIRouter
+
+from app.api.v1.endpoints import accounts, activities, admin, ai_command, auth, communication, dashboard, deals, documents, dubai_finance, finance, integrations, leads, marketing, reports, sales_team, support, contacts, automation, branch, tenant
+
+api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
+api_router.include_router(leads.router, prefix="/leads", tags=["leads"])
+api_router.include_router(contacts.router, prefix="/contacts", tags=["contacts"])
+api_router.include_router(accounts.router, prefix="/accounts", tags=["accounts"])
+api_router.include_router(deals.router, prefix="/deals", tags=["deals"])
+api_router.include_router(activities.router, prefix="", tags=["activities"])
+api_router.include_router(sales_team.router, prefix="/sales-team", tags=["sales-team"])
+api_router.include_router(communication.router, prefix="/communication", tags=["communication"])
+api_router.include_router(marketing.router, prefix="/marketing", tags=["marketing"])
+api_router.include_router(support.router, prefix="/support", tags=["support"])
+api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
+api_router.include_router(dubai_finance.router, prefix="/dubai-finance", tags=["dubai-finance"])
+api_router.include_router(documents.router, prefix="/documents", tags=["documents"])
+api_router.include_router(automation.router, prefix="/automation", tags=["automation"])
+api_router.include_router(ai_command.router, prefix="/ai-command", tags=["ai-command"])
+api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
+api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
+api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
+api_router.include_router(branch.router, prefix="/branches", tags=["branches"])
+api_router.include_router(tenant.router, prefix="/tenants", tags=["tenants"])
+
