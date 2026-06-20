@@ -13,30 +13,33 @@ from app.models.tenant import Tenant
 def seed_permissions():
     db = SessionLocal()
     try:
-        # Define default permissions
+        # Define default permissions - matches frontend MODULES list exactly
         modules_with_actions = [
-            ("users", ["view", "create", "edit", "delete"]),
-            ("roles", ["view", "create", "edit", "delete", "manage_permissions"]),
-            ("permissions", ["view", "create", "edit", "delete"]),
-            ("hierarchy", ["view", "create", "edit", "delete"]),
-            ("branches", ["view", "create", "edit", "delete"]),
-            ("teams", ["view", "create", "edit", "delete"]),
-            ("managers", ["view", "create", "edit", "delete"]),
-            ("departments", ["view", "create", "edit", "delete"]),
-            ("territories", ["view", "create", "edit", "delete"]),
-            ("custom_fields", ["view", "create", "edit", "delete"]),
-            ("form_builder", ["view", "create", "edit", "delete"]),
-            ("master_data", ["view", "create", "edit", "delete"]),
-            ("audit_logs", ["view"]),
-            ("leads", ["view", "create", "edit", "delete", "assign", "convert"]),
-            ("deals", ["view", "create", "edit", "delete", "approve"]),
-            ("finance", ["view", "create", "edit", "delete", "payment"]),
-            ("support", ["view", "create", "edit", "delete", "resolve"]),
-            ("communication", ["send"]),
-            ("marketing", ["manage"]),
-            ("reports", ["view"]),
-            ("admin", ["manage"]),
-            ("aiCommand", ["view", "manage"]),
+            # Core CRM modules (matching frontend MODULES array)
+            ("dashboard",      ["create", "view", "edit", "delete"]),
+            ("leads",          ["create", "view", "edit", "delete"]),
+            ("contacts",       ["create", "view", "edit", "delete"]),
+            ("accounts",       ["create", "view", "edit", "delete"]),
+            ("deals",          ["create", "view", "edit", "delete"]),
+            ("activities",     ["create", "view", "edit", "delete"]),
+            ("sales_team",     ["create", "view", "edit", "delete"]),
+            ("communication",  ["create", "view", "edit", "delete"]),
+            ("support",        ["create", "view", "edit", "delete"]),
+            ("finance",        ["create", "view", "edit", "delete"]),
+            ("documents",      ["create", "view", "edit", "delete"]),
+            ("automation",     ["create", "view", "edit", "delete"]),
+            ("ai_assistant",   ["create", "view", "edit", "delete"]),
+            ("reports",        ["create", "view", "edit", "delete"]),
+            ("integrations",   ["create", "view", "edit", "delete"]),
+            ("admin",          ["create", "view", "edit", "delete", "manage"]),
+            # Legacy module names (kept for backward compatibility)
+            ("users",          ["view", "create", "edit", "delete"]),
+            ("roles",          ["view", "create", "edit", "delete", "manage_permissions"]),
+            ("permissions",    ["view", "create", "edit", "delete"]),
+            ("branches",       ["view", "create", "edit", "delete"]),
+            ("managers",       ["view", "create", "edit", "delete"]),
+            ("audit_logs",     ["view"]),
+            ("aiCommand",      ["view", "manage"]),
         ]
         
         # Get the first tenant (or create one if doesn't exist)

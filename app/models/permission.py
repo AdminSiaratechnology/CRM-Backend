@@ -29,3 +29,15 @@ class RolePermission(Base, UUIDPrimaryKeyMixin, TenantScopedMixin):
     __table_args__ = (
         UniqueConstraint("tenant_id", "role_id", "permission_id", name="uq_tenant_role_permission"),
     )
+
+
+class UserPermission(Base, UUIDPrimaryKeyMixin, TenantScopedMixin):
+    __tablename__ = "user_permissions"
+    
+    user_id: Mapped[str] = mapped_column(String(36), index=True)
+    permission_id: Mapped[str] = mapped_column(String(36), index=True)
+    
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "user_id", "permission_id", name="uq_tenant_user_permission"),
+    )
+

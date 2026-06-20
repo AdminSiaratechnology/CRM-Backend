@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.exceptions import AppError
 from app.core.permissions import has_permission
 from app.core.security import decode_token
-from app.models.permission import Permission, RolePermission
+from app.models.permission import Permission, RolePermission, UserPermission
 from app.models.role import Role
 from app.models.user import User
 from app.schemas.auth import CurrentUser
@@ -17,32 +17,47 @@ bearer = HTTPBearer(auto_error=False)
 
 def _get_user_permissions(db: Session, user_obj: User) -> List[str]:
     """Helper to get all active permissions for a user."""
-    if not user_obj.role_id:
-        return []
+    permission_names = set()
     
-    # Get all role permissions
-    role_perms = db.query(RolePermission).filter(
-        RolePermission.tenant_id == user_obj.tenant_id,
-        RolePermission.role_id == user_obj.role_id
+    # Get role permissions
+    if user_obj.role_id:
+        role_perms = db.query(RolePermission).filter(
+            RolePermission.tenant_id == user_obj.tenant_id,
+            RolePermission.role_id == user_obj.role_id
+        ).all()
+        
+        for rp in role_perms:
+            perm = db.query(Permission).filter(
+                Permission.id == rp.permission_id,
+                Permission.status == "active"
+            ).first()
+            if perm:
+                permission_names.add(perm.name)
+    
+    # Get direct user permissions
+    user_perms = db.query(UserPermission).filter(
+        UserPermission.tenant_id == user_obj.tenant_id,
+        UserPermission.user_id == user_obj.id
     ).all()
     
-    # Get permission names
-    permission_names = []
-    for rp in role_perms:
+    for up in user_perms:
         perm = db.query(Permission).filter(
-            Permission.id == rp.permission_id,
+            Permission.id == up.permission_id,
             Permission.status == "active"
         ).first()
         if perm:
-            permission_names.append(perm.name)
-    
-    return permission_names
+            permission_names.add(perm.name)
+            
+    return list(permission_names)
 
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer), db: Session = Depends(get_db)) -> CurrentUser:
     if not credentials or not credentials.credentials:
         raise AppError("Authentication required", "AUTH_REQUIRED", 401)
-    payload = decode_token(credentials.credentials)
+    try:
+        payload = decode_token(credentials.credentials)
+    except Exception:
+        raise AppError("Invalid or expired token", "INVALID_TOKEN", 401)
     user = db.query(User).filter(User.id == payload.get("sub"), User.deleted_at.is_(None)).first()
     if not user:
         raise AppError("Invalid user session", "INVALID_SESSION", 401)
@@ -59,8 +74,10 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)
         role_name=role.name if role else "Viewer",
         role_id=user.role_id,
         scope=user.scope,
-        permissions=permissions
+        permissions=permissions,
+        is_superuser=user.is_superuser
     )
+
 
 
 def require_permission(permission: str):

@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "change-me"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 14
-    cors_origins: str = "http://localhost:5173,http://localhost:5174, http://localhost:3000"
+    cors_origins: str = "http://localhost:5173,http://localhost:5174, http://localhost:3000,https://crmsiara.netlify.app"
     redis_url: str = "redis://localhost:6379/0"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")

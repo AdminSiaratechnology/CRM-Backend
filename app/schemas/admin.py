@@ -22,6 +22,30 @@ class AdminUserCreate(BaseModel):
     login_access: bool = True
     gps_access: bool = False
     monthly_target: int | None = None
+    agency_name: str | None = None
+    is_superuser: bool = False
+    superuser_privileges: bool | None = None
+    permissions: list[str] | None = None
+    permissions_matrix: dict | str | None = None
+
+
+class AdminUserUpdate(BaseModel):
+    name: str | None = None
+    email: EmailStr | None = None
+    password: str | None = None
+    mobile: str | None = None
+    role_id: str | None = None
+    branch_id: str | None = None
+    manager_id: str | None = None
+    status: str | None = None
+    login_access: bool | None = None
+    gps_access: bool | None = None
+    monthly_target: int | None = None
+    agency_name: str | None = None
+    is_superuser: bool | None = None
+    superuser_privileges: bool | None = None
+    permissions: list[str] | None = None
+    permissions_matrix: dict | str | None = None
 
 
 class AdminUserResponse(BaseModel):
@@ -34,6 +58,9 @@ class AdminUserResponse(BaseModel):
     login_access: bool
     gps_access: bool
     monthly_target: int | None = None
+    role_id: str | None = None
+    branch_id: str | None = None
+    manager_id: str | None = None
     role: RelatedEntity | None = None
     branch: RelatedEntity | None = None
     manager: RelatedEntity | None = None
@@ -41,6 +68,9 @@ class AdminUserResponse(BaseModel):
     updated_at: str | None = None
     created_by_id: str | None = None
     updated_by_id: str | None = None
+    agency_name: str | None = None
+    is_superuser: bool = False
+    permissions_matrix: dict | str | None = None
     
     class Config:
         from_attributes = True
