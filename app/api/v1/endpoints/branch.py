@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.core.database import get_db
-from app.core.exceptions import success_response
+from app.core.exceptions import success_response, AppError
 from app.core.pagination import PaginationParams
 from app.middleware.auth_middleware import require_permission
 from app.schemas.branch import BranchCreate, BranchUpdate
@@ -20,10 +21,22 @@ def list_branches(page: int = Query(1), limit: int = Query(20), db: Session = De
 
 @router.post("/")
 def create_branch(payload: BranchCreate, db: Session = Depends(get_db), user=Depends(require_permission("branches.create"))):
-    record = service.create(db, user, payload.model_dump())
-    db.commit()
-    db.refresh(record)
-    return success_response(record, "Branch created")
+    try:
+        record = service.create(db, user, payload.model_dump())
+        db.commit()
+        db.refresh(record)
+        return success_response(record, "Branch created")
+    except IntegrityError as e:
+        db.rollback()
+        if "code" in str(e).lower():
+            raise AppError(
+                "Branch code already exists",
+                error_code="DUPLICATE_BRANCH_CODE"
+            )
+        raise AppError(
+            "Failed to create branch due to duplicate or conflicting data",
+            error_code="INTEGRITY_ERROR"
+        )
 
 
 @router.get("/{branch_id}")

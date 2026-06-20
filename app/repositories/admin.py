@@ -1,3 +1,8 @@
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.models.branch import Branch
+from app.models.manager import Manager
 from app.models.permission import Permission
 from app.models.role import Role
 from app.models.user import User

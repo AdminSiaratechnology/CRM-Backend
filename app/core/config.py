@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "Nexus CRM Backend"
     api_prefix: str = "/api/v1"
-    database_url: str = "postgresql+psycopg2://postgres:12345678@localhost:5432/crm"
+    database_url: str = "postgresql+psycopg2://postgres:root@localhost:5432/crm"
     jwt_secret: str = "change-me"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 14

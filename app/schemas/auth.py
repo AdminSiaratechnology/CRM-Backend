@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from typing import List
 
 
 class LoginRequest(BaseModel):
@@ -16,4 +17,6 @@ class CurrentUser(BaseModel):
     branch_id: str | None = None
     team_id: str | None = None
     role_name: str
+    role_id: str | None = None
     scope: str = "OWN"
+    permissions: List[str] = []

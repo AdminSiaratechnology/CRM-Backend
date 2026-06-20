@@ -18,13 +18,26 @@ def list_users(page: int = Query(1), limit: int = Query(20), db: Session = Depen
     return success_response(rows, "Users loaded", meta)
 
 
+# @router.post("/users")
+# def create_user(payload: AdminUserCreate, db: Session = Depends(get_db), user=Depends(require_permission("admin.manage"))):
+#     record = service.create_user(db, user, payload.model_dump())
+#     db.commit()
+#     return success_response(record, "User created")
 @router.post("/users")
-def create_user(payload: AdminUserCreate, db: Session = Depends(get_db), user=Depends(require_permission("admin.manage"))):
+def create_user(
+    payload: AdminUserCreate,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("admin.manage"))
+):
     record = service.create_user(db, user, payload.model_dump())
     db.commit()
-    db.refresh(record)
-    return success_response(record, "User created")
 
+    return {
+        "success": True,
+        "message": "User created",
+        "data": record,
+        "meta": {}
+    }
 
 @router.get("/roles")
 def list_roles(page: int = Query(1), limit: int = Query(20), db: Session = Depends(get_db), user=Depends(require_permission("admin.manage"))):

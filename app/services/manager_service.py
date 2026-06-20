@@ -1,57 +1,40 @@
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import AppError
 from app.core.pagination import PaginationParams
 from app.core.tenant import scoped_filters
-from app.models.branch import Branch
-from app.repositories.branch import BranchRepository
+from app.models.manager import Manager
+from app.repositories.manager import ManagerRepository
 from app.schemas.auth import CurrentUser
 
-# Columns that actually exist on the Branch model (own + TenantScopedMixin + TimestampMixin)
-_BRANCH_COLUMNS = {
-    "name", "code", "country", "state", "city", "address", "status",
+# Columns that actually exist on the Manager model
+_MANAGER_COLUMNS = {
+    "name", "email", "mobile", "status",
     "tenant_id", "branch_id", "team_id", "owner_id",
     "created_by_id", "updated_by_id",
 }
 
 
 def _clean_payload(payload: dict) -> dict:
-    """Strip unknown keys and map countryCode -> country."""
-    # alias mapping from frontend form field names
-    aliases = {"countryCode": "country"}
+    """Strip unknown keys from payload."""
     cleaned = {}
     for key, value in payload.items():
-        mapped_key = aliases.get(key, key)
-        if mapped_key in _BRANCH_COLUMNS:
-            cleaned[mapped_key] = value
+        if key in _MANAGER_COLUMNS:
+            cleaned[key] = value
     return cleaned
 
 
-class BranchService:
+class ManagerService:
     def __init__(self):
-        self.repository = BranchRepository()
+        self.repository = ManagerRepository()
 
     def list(self, db: Session, user: CurrentUser, pagination: PaginationParams):
-        """List branches with tenant scoped filters and pagination."""
+        """List managers with tenant scoped filters and pagination."""
         return self.repository.list(db, scoped_filters(user), pagination)
 
     def create(self, db: Session, user: CurrentUser, payload: dict):
-        """Create a new branch and write audit log."""
+        """Create a new manager."""
         scope = scoped_filters(user)
         data = _clean_payload(payload)
-        
-        # Check for duplicate branch code
-        if data.get("code"):
-            existing = db.execute(
-                select(Branch).filter_by(code=data["code"], tenant_id=scope.get("tenant_id"))
-            ).first()
-            if existing:
-                raise AppError(
-                    f"Branch code '{data['code']}' already exists",
-                    error_code="DUPLICATE_BRANCH_CODE"
-                )
-        
         data.update({
             **scope,
             "created_by_id": user.user_id,
@@ -60,18 +43,18 @@ class BranchService:
         return self.repository.create(db, data)
 
     def get(self, db: Session, user: CurrentUser, record_id: str):
-        """Retrieve a branch by ID with tenant filters."""
+        """Retrieve a manager by ID with tenant filters."""
         return self.repository.get(db, scoped_filters(user), record_id)
 
     def update(self, db: Session, user: CurrentUser, record_id: str, payload: dict):
-        """Update a branch and write audit log."""
+        """Update a manager."""
         record = self.get(db, user, record_id)
         data = _clean_payload(payload)
         data["updated_by_id"] = user.user_id
         return self.repository.update(db, record, data)
 
     def delete(self, db: Session, user: CurrentUser, record_id: str):
-        """Soft delete a branch by setting status to 'deleted'."""
+        """Soft delete a manager by setting status to 'deleted'."""
         record = self.get(db, user, record_id)
         if not record:
             return None

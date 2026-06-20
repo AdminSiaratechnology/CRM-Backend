@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import accounts, activities, admin, ai_command, auth, communication, dashboard, deals, documents, dubai_finance, finance, integrations, leads, marketing, reports, sales_team, support, contacts, automation, branch, tenant
+from app.api.v1.endpoints import accounts, activities, admin, ai_command, auth, communication, dashboard, deals, documents, dubai_finance, finance, integrations, leads, marketing, reports, sales_team, support, contacts, automation, branch, tenant, manager, role, permissions
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -24,4 +24,7 @@ api_router.include_router(integrations.router, prefix="/integrations", tags=["in
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(branch.router, prefix="/branches", tags=["branches"])
 api_router.include_router(tenant.router, prefix="/tenants", tags=["tenants"])
+api_router.include_router(manager.router, prefix="/managers", tags=["managers"])
+api_router.include_router(role.router, prefix="/roles", tags=["roles"])
+api_router.include_router(permissions.router, prefix="/permissions", tags=["permissions"])
 
