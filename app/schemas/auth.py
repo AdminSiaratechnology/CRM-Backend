@@ -20,3 +20,5 @@ class CurrentUser(BaseModel):
     role_id: str | None = None
     scope: str = "OWN"
     permissions: List[str] = []
+    is_superuser: bool = False
+

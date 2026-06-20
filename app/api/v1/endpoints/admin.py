@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.core.exceptions import success_response
 from app.core.pagination import PaginationParams
 from app.middleware.auth_middleware import require_permission
-from app.schemas.admin import AdminUserCreate
+from app.schemas.admin import AdminUserCreate, AdminUserUpdate
 from app.services.admin_service import AdminService
 
 router = APIRouter()
@@ -18,11 +18,6 @@ def list_users(page: int = Query(1), limit: int = Query(20), db: Session = Depen
     return success_response(rows, "Users loaded", meta)
 
 
-# @router.post("/users")
-# def create_user(payload: AdminUserCreate, db: Session = Depends(get_db), user=Depends(require_permission("admin.manage"))):
-#     record = service.create_user(db, user, payload.model_dump())
-#     db.commit()
-#     return success_response(record, "User created")
 @router.post("/users")
 def create_user(
     payload: AdminUserCreate,
@@ -31,13 +26,41 @@ def create_user(
 ):
     record = service.create_user(db, user, payload.model_dump())
     db.commit()
+    return success_response(record, "User created")
 
-    return {
-        "success": True,
-        "message": "User created",
-        "data": record,
-        "meta": {}
-    }
+
+@router.get("/users/{user_id}")
+def get_user(
+    user_id: str,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("admin.manage"))
+):
+    record = service.get_user(db, user, user_id)
+    return success_response(record, "User loaded")
+
+
+@router.patch("/users/{user_id}")
+def update_user(
+    user_id: str,
+    payload: AdminUserUpdate,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("admin.manage"))
+):
+    record = service.update_user(db, user, user_id, payload.model_dump(exclude_none=True))
+    db.commit()
+    return success_response(record, "User updated")
+
+
+@router.delete("/users/{user_id}")
+def delete_user(
+    user_id: str,
+    db: Session = Depends(get_db),
+    user=Depends(require_permission("admin.manage"))
+):
+    record = service.delete_user(db, user, user_id)
+    db.commit()
+    return success_response(record, "User deleted")
+
 
 @router.get("/roles")
 def list_roles(page: int = Query(1), limit: int = Query(20), db: Session = Depends(get_db), user=Depends(require_permission("admin.manage"))):

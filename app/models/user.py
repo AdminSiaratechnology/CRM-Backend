@@ -1,4 +1,4 @@
-from sqlalchemy import String, Boolean, Integer
+from sqlalchemy import String, Boolean, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -18,3 +18,7 @@ class User(Base, UUIDPrimaryKeyMixin, TenantScopedMixin):
     gps_access: Mapped[bool] = mapped_column(Boolean, default=False)
     monthly_target: Mapped[int | None] = mapped_column(Integer, nullable=True)
     scope: Mapped[str] = mapped_column(String(50), default="OWN")
+    agency_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+    permissions_matrix: Mapped[str | None] = mapped_column(Text, nullable=True)
+
