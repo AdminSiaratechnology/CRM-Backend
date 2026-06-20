@@ -1,4 +1,4 @@
-from app.models import account, activity, ai_command, audit_log, automation, branch, communication, contact, deal, document, dubai_finance, finance, integration, lead, marketing, permission, report, role, support, team, tenant, user
+from app.models import account, activity, ai_command, audit_log, automation, branch, communication, contact, deal, document, dubai_finance, finance, integration, lead, manager, marketing, permission, report, role, support, team, tenant, user
 
 __all__ = [
     "account",
@@ -15,6 +15,7 @@ __all__ = [
     "finance",
     "integration",
     "lead",
+    "manager",
     "marketing",
     "permission",
     "report",

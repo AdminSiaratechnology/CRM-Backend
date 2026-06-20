@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# CORS configured
+
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.exceptions import install_exception_handlers, success_response

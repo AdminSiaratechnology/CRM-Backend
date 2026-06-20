@@ -1,9 +1,11 @@
-ROLE_PERMISSIONS = {
-    "Super Admin": {"*"},
-    "Company Owner": {"leads.view", "leads.create", "leads.edit", "leads.delete", "leads.assign", "leads.convert", "deals.view", "deals.create", "deals.edit", "deals.delete", "deals.approve", "finance.view", "finance.create", "finance.edit", "finance.delete", "finance.payment", "support.view", "support.create", "support.edit", "support.delete", "support.resolve", "communication.send", "marketing.manage", "reports.view", "admin.manage", "aiCommand.view", "aiCommand.manage"},
-}
+from app.schemas.auth import CurrentUser
 
 
-def has_permission(role_name: str, permission: str) -> bool:
-    allowed = ROLE_PERMISSIONS.get(role_name, set())
-    return "*" in allowed or permission in allowed
+def has_permission(user: CurrentUser, permission: str) -> bool:
+    """Check if current user has a specific permission."""
+    # Check if user is super admin or has wildcard permission
+    if user.role_name == "Super Admin":
+        return True
+    
+    # Check if permission exists in user's permissions
+    return permission in user.permissions

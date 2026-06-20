@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import String, Boolean, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -12,4 +12,9 @@ class User(Base, UUIDPrimaryKeyMixin, TenantScopedMixin):
     mobile: Mapped[str | None] = mapped_column(String(30), index=True, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     role_id: Mapped[str | None] = mapped_column(String(36), index=True, nullable=True)
+    branch_id: Mapped[str | None] = mapped_column(String(36), index=True, nullable=True)
+    manager_id: Mapped[str | None] = mapped_column(String(36), index=True, nullable=True)
+    login_access: Mapped[bool] = mapped_column(Boolean, default=True)
+    gps_access: Mapped[bool] = mapped_column(Boolean, default=False)
+    monthly_target: Mapped[int | None] = mapped_column(Integer, nullable=True)
     scope: Mapped[str] = mapped_column(String(50), default="OWN")
